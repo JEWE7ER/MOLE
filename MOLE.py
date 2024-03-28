@@ -97,7 +97,7 @@ def ANIMATION_ON_SCREEN(all_sprites,player,g_box,up,down,left,right):
     b_count=Goods_Box.count
     if up or down or left or right: tick=25
     else: tick=1
-    for i in range (tick):
+    for _ in range (tick):
         screen.blit(background_img, background_rect) ################ кидаем изобр
         Blit_Text(p_count,b_count)
         player.update(g_box,w_box,points,up,down,left,right)
@@ -105,10 +105,11 @@ def ANIMATION_ON_SCREEN(all_sprites,player,g_box,up,down,left,right):
         pygame.display.update() # Or pygame.display.flip() ################ обновляем экран
         clock.tick(FPS) ################ ограничиваем по кадрам
 
-def Clear_Screen(lvl,all_sprites,player,g_box,up,down,left,right):
-    global WIDTH,HEIGHT
+def Clear_Screen(lvl):
+    global WIDTH,HEIGHT, up, dawn, left, right
     Reset_Count()
     player,g_box,w_box,points,all_sprites=load_level(lvl,WIDTH,HEIGHT)
+    up=down=left=right=False
     ANIMATION_ON_SCREEN(all_sprites,player,g_box,up,down,left,right)
     return player,g_box,w_box,points,all_sprites
 
@@ -131,34 +132,32 @@ while running:
     pygame.event.clear()
     keystate=pygame.key.get_pressed()
     if keystate[pygame.K_r]:
-        player,g_box,w_box,points,all_sprites=Clear_Screen(LEVELES[numb],all_sprites,player,g_box,up,down,left,right)
+        player,g_box,w_box,points,all_sprites=Clear_Screen(LEVELES[numb])
     elif keystate[pygame.K_F1]: 
         render_multi_line(help,50,25); pygame.display.update()
         Press_Bool()
     elif keystate[pygame.K_ESCAPE]: running=False
     else:
         finish_level=False
-        if not finish_level: ################ цикл чтоб потом не двигаться
-            ################ отображение
-            ANIMATION_ON_SCREEN(all_sprites,player,g_box,up,down,left,right)
-            ################ условие конца лвла
-            if(Goods_Box.recollor_count==len(g_box)): finish_level=True; numb+=1; Reset_Count()
-            
-            for event in pygame.event.get(): ################ ждём какое-то собитие (клавитура-мышь)
-                if event.type == pygame.QUIT:
-                    running = False
-                elif event.type == pygame.KEYDOWN:################ если кнопка нажата
-                    ################start_time = time.time()
-                    ################ какая та из стрелок
-                    if event.key==pygame.K_UP: up=True
-                    elif event.key==pygame.K_DOWN: down=True
-                    elif event.key==pygame.K_LEFT: left=True
-                    elif event.key==pygame.K_RIGHT: right=True
-                elif event.type == pygame.KEYUP:
-                    if event.key==pygame.K_UP: up=False
-                    elif event.key==pygame.K_DOWN: down=False
-                    elif event.key==pygame.K_LEFT: left=False
-                    elif event.key==pygame.K_RIGHT: right=False
+        ################ отображение
+        ANIMATION_ON_SCREEN(all_sprites,player,g_box,up,down,left,right)
+        ################ условие конца лвла
+        if(Goods_Box.recollor_count==len(g_box)): finish_level=True; numb+=1; Reset_Count()
+        for event in pygame.event.get(): ################ ждём какое-то собитие (клавитура-мышь)
+            if event.type == pygame.QUIT:
+                running = False
+            elif event.type == pygame.KEYDOWN:################ если кнопка нажата
+                ################start_time = time.time()
+                ################ какая-то из стрелок
+                if event.key==pygame.K_UP: up=True
+                elif event.key==pygame.K_DOWN: down=True
+                elif event.key==pygame.K_LEFT: left=True
+                elif event.key==pygame.K_RIGHT: right=True
+            elif event.type == pygame.KEYUP:
+                if event.key==pygame.K_UP: up=False
+                elif event.key==pygame.K_DOWN: down=False
+                elif event.key==pygame.K_LEFT: left=False
+                elif event.key==pygame.K_RIGHT: right=False
 
         if finish_level:
             Tranparent()
@@ -175,7 +174,7 @@ while running:
                 screen.blit(enter_label,rect_enter)
                 pygame.display.update() ################ обновляем
                 Press_Bool()
-                player,g_box,w_box,points,all_sprites=Clear_Screen(LEVELES[numb],all_sprites,player,g_box,up,down,left,right)    
+                player,g_box,w_box,points,all_sprites=Clear_Screen(LEVELES[numb])   
                 
 print("Exited the game loop. Game will quit...")
 pygame.quit() ################ выход
